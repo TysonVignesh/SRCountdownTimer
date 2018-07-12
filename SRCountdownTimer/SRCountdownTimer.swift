@@ -49,6 +49,7 @@ public class SRCountdownTimer: UIView {
 
     private var timer: Timer?
     private var beginingValue: Int = 1
+    private var endingValue: Int = 0
     private var totalTime: TimeInterval = 1
     private var elapsedTime: TimeInterval = 0
     private var interval: TimeInterval = 1 // Interval which is set by a user
@@ -142,11 +143,16 @@ public class SRCountdownTimer: UIView {
      *   - beginingValue: Value to start countdown from.
      *   - interval: Interval between reducing the counter(1 second by default)
      */
-    public func start(beginingValue: Int, interval: TimeInterval = 1) {
+    public func start(beginingValue: Int, endingValue: Int, interval: TimeInterval = 1) {
         self.beginingValue = beginingValue
         self.interval = interval
+        self.endingValue = endingValue
 
-        totalTime = TimeInterval(beginingValue) * interval
+        if beginingValue > endingValue {
+            totalTime = TimeInterval(beginingValue) * interval
+        } else {
+            totalTime = TimeInterval(endingValue) * interval
+        }
         elapsedTime = 0
         currentCounterValue = beginingValue
 
@@ -203,7 +209,13 @@ public class SRCountdownTimer: UIView {
         if elapsedTime < totalTime {
             setNeedsDisplay()
 
-            let computedCounterValue = beginingValue - Int(elapsedTime / interval)
+            var computedCounterValue = 0
+            
+            if beginingValue > endingValue {
+                computedCounterValue = beginingValue - Int(elapsedTime / interval)
+            } else {
+                computedCounterValue = beginingValue + Int(elapsedTime / interval)
+            }
             if computedCounterValue != currentCounterValue {
                 currentCounterValue = computedCounterValue
             }
